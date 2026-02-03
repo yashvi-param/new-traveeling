@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { trips } from "../../data/TripsData";
 import { Container, Row, Col, Button, Card, Form } from "react-bootstrap";
 import { AuthContext } from "../../context/AuthContext";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+// import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/config";
 
 const BookingForm = () => {
@@ -45,20 +45,28 @@ const BookingForm = () => {
       return;
     }
 
-    await addDoc(collection(db, "booking"), {
-      tripId: selectedTrip.id,
-      tripName: selectedTrip.name,
-      tripDestination: selectedTrip.destination,
+  try {
+  if (!user || !selectedTrip) return;
 
-      userId: user.uid,
-      userName: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      TravelDate: formData.date,
-      person: formData.person,
-      TotalAmount: formData.total,
-      createdAt: serverTimestamp(),
-    });
+  await addDoc(collection(db, "booking"), {
+    tripId: selectedTrip.id,
+    tripName: selectedTrip.name,
+    tripDestination: selectedTrip.destination,
+
+    userId: user.uid,
+    userName: formData.name,
+    email: formData.email,
+    phone: formData.phone,
+    travelDate: formData.date,
+    person: Number(formData.person),
+    totalAmount: Number(formData.total),
+    createdAt: serverTimestamp(),
+  });
+
+  alert("Booking successful ✅");
+} catch (error) {
+  console.error("Booking Error:", error.message);
+}
 
     alert("trip booked successfully");
 
